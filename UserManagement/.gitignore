@@ -1,0 +1,15 @@
+*
+!*/
+
+# Then add everything needed
+
+!/apps/**
+#!/docs/**
+!/.git/**
+!/.github/**
+!.gitignore
+!/user_management/**
+!/locale/**git
+!manage.py
+!requirements.txt
+
