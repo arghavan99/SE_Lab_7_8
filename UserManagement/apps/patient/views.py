@@ -27,3 +27,4 @@ def get_new_patients(request):
     print(serialized_patients.data)
     res = JSONRenderer().render(serialized_patients.data)
     return JsonResponse(res, status=HTTP_200_OK)
+

@@ -29,3 +29,11 @@ def get_new_doctors(request):
     return JsonResponse(res, status=HTTP_200_OK)
 
 
+def get_doctor_signups(request):
+    doctors = Doctor.objects.all()
+    serialized_doctors = DoctorSerializer(doctors, many=True)
+    print(serialized_doctors.data)
+    res = JSONRenderer().render(serialized_doctors.data)
+    return JsonResponse(res, status=HTTP_200_OK)
+
+
