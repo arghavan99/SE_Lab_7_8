@@ -15,11 +15,10 @@ def get_doctor(request):
     if d is None:
         return Response(status=HTTP_404_NOT_FOUND)
     d = d[0]
-    response = {
-        'name': d.name,
-        'email': d.email,
-    }
-    return JsonResponse(response, status=HTTP_200_OK)
+    serialized_doctor = DoctorSerializer(d)
+    print(serialized_doctor.data)
+    res = JSONRenderer().render(serialized_doctor.data)
+    return JsonResponse(res, status=HTTP_200_OK)
 
 
 def get_new_doctors(request):
