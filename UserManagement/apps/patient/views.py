@@ -1,9 +1,17 @@
-from django.http import JsonResponse
-from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
-from rest_framework.renderers import JSONRenderer
+from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import user_passes_test
-from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.status import (
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+    HTTP_200_OK
+)
 
 # Create your views here.
 from apps.patient.models import Patient
@@ -35,7 +43,27 @@ def create_patient(request):
     n_id = request.data.get('national_id')
     password = request.data.get('password')
     email = request.data.get('email')
+    username = request.data('username')
     p = Patient.objects.create(name=name, national_id=n_id, email=email, commit=False)
     p.set_password(password)
     p.save() #todo Chcek
+    token = Token.objects.create(user=p)
     return Response(HTTP_200_OK)
+
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def login_patient(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+    if username is None or password is None:
+        return Response({'error': 'Please provide both username and password'},
+                        status=HTTP_400_BAD_REQUEST)
+    user = authenticate(username=username, password=password)
+    if not user:
+        return Response({'error': 'Invalid Credentials'},
+                        status=HTTP_404_NOT_FOUND)
+    token, _ = Token.objects.get_or_create(user=user)
+    return Response({'token': token.key},
+                    status=HTTP_200_OK)
