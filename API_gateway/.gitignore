@@ -1,0 +1,15 @@
+*
+!*/
+
+# Then add everything needed
+
+!/gateway/**
+#!/docs/**
+!/.git/**
+!/.github/**
+!.gitignore
+!/API_GATEWAY/**
+!/locale/**git
+!manage.py
+!requirements.txt
+

@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
-    HTTP_200_OK
+    HTTP_200_OK, HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 )
 
 # Create your views here.
@@ -38,25 +38,32 @@ def get_new_patients(request):
     return JsonResponse(res, status=HTTP_200_OK)
 
 
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
 def create_patient(request):
-    name = request.data.get('name')
-    n_id = request.data.get('national_id')
-    password = request.data.get('password')
-    email = request.data.get('email')
-    username = request.data('username')
-    p = Patient.objects.create(name=name, national_id=n_id, email=email, commit=False)
-    p.set_password(password)
-    p.save() #todo Chcek
-    token = Token.objects.create(user=p)
-    return Response(HTTP_200_OK)
+    name = request.POST['name']
+    n_id = request.POST['national_id']
+    password = request.POST['password']
+    email = request.POST['email']
+    username = request.POST['username']
+    try:
+        p = Patient.objects.create(name=name, national_id=n_id, email=email, username=username)
+        p.set_password(password)
+        p.save()
+        token = Token.objects.create(user=p)
+        res = Response(status=HTTP_201_CREATED)
+        return res
+    except:
+        return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def login_patient(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
+    username = request.POST["username"]
+    password = request.POST["password"]
     if username is None or password is None:
         return Response({'error': 'Please provide both username and password'},
                         status=HTTP_400_BAD_REQUEST)

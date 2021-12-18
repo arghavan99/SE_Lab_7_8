@@ -1,4 +1,4 @@
-"""user_management URL Configuration
+"""hhhh URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.0/topics/http/urls/
@@ -15,13 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from apps.patient import urls as p_urls
-from apps.doctor import urls as d_urls
-from user_management import views
+from gateway import urls
 
 urlpatterns = [
-    path('my_admin/', admin.site.urls),
-    path('patient/', include(p_urls)),
-    path('doctor/', include(d_urls)),
-    path('get_user_permissions/', views.get_user_permissions),
+    path('admin/', admin.site.urls),
+    path('', include(urls))
+
 ]

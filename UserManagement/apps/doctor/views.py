@@ -10,7 +10,9 @@ from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
-    HTTP_200_OK
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_500_INTERNAL_SERVER_ERROR,
 )
 
 # Create your views here.
@@ -45,17 +47,24 @@ def get_doctor_signups(request):
     res = JSONRenderer().render(serialized_doctors.data)
     return JsonResponse(res, status=HTTP_200_OK)
 
-
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
 def create_doctor(request):
-    name = request.data.get('name')
-    n_id = request.data.get('national_id')
-    password = request.data.get('password')
-    email = request.data.get('email')
-    d = Doctor.objects.create(name=name, national_id=n_id, email=email, commit=False)
-    d.set_password(password)
-    d.save() #todo Chcek
-    token = Token.objects.create(user=d)
-    return Response(HTTP_200_OK)
+    name = request.POST['name']
+    n_id = request.POST['national_id']
+    password = request.POST['password']
+    email = request.POST['email']
+    username = request.POST['username']
+    try:
+        d = Doctor.objects.create(name=name, national_id=n_id, email=email, username=username)
+        d.set_password(password)
+        token = Token.objects.create(user=d)
+        d.save()
+        res = Response(status=HTTP_201_CREATED)
+        return res
+    except:
+        return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @csrf_exempt
@@ -65,14 +74,14 @@ def login_doctor(request):
     username = request.data.get("username")
     password = request.data.get("password")
     if username is None or password is None:
-        return Response({'error': 'Please provide both username and password'},
+        return JsonResponse({'error': 'Please provide both username and password'},
                         status=HTTP_400_BAD_REQUEST)
     user = authenticate(username=username, password=password)
     if not user:
-        return Response({'error': 'Invalid Credentials'},
+        return JsonResponse({'error': 'Invalid Credentials'},
                         status=HTTP_404_NOT_FOUND)
     token, _ = Token.objects.get_or_create(user=user)
-    return Response({'token': token.key},
+    return JsonResponse({'token': token.key},
                     status=HTTP_200_OK)
 
 
