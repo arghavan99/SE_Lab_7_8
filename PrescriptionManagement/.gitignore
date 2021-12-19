@@ -1,0 +1,15 @@
+*
+!*/
+
+# Then add everything needed
+
+!/prescription/**
+#!/docs/**
+!/.git/**
+!/.github/**
+!.gitignore
+!/Prescription_Management/**
+!/locale/**git
+!manage.py
+!requirements.txt
+
