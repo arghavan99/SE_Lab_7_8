@@ -17,10 +17,12 @@ from django.contrib import admin
 from django.urls import path, include
 from apps.patient import urls as p_urls
 from apps.doctor import urls as d_urls
+from apps.my_admin import urls as a_urls
 from user_management import views
 
 urlpatterns = [
-    path('my_admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
+    path('my_admin/', include(a_urls)),
     path('patient/', include(p_urls)),
     path('doctor/', include(d_urls)),
     path('get_user_permissions/', views.get_user_permissions),

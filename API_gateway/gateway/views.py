@@ -63,3 +63,16 @@ def login_patient(request):
         return JsonResponse(res.json(), status=HTTP_200_OK)
     return JsonResponse(res.json(), status=HTTP_401_UNAUTHORIZED)
 
+
+@api_view(('POST',))
+@renderer_classes((JSONRenderer,))
+def login_admin(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    params = {'username': username, 'password': password}
+    res = requests.post(USER_MANAGEMENT_URL + 'my_admin/login_admin/', data=params)
+    # print('content', res.json())
+    if res.status_code == 200:
+        return JsonResponse(res.json(), status=HTTP_200_OK)
+    return JsonResponse(res.json(), status=HTTP_401_UNAUTHORIZED)
+
