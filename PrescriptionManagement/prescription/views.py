@@ -75,3 +75,15 @@ def get_daily_pres(request):
     # print()
     print(serialized_pres.data)
     return JsonResponse(serialized_pres.data, status=HTTP_200_OK, safe=False)
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def get_all_pres(request):
+    pres = list(Prescription.objects.all())
+    serialized_pres = PrescriptionSerializer(pres, many=True)
+    print(serialized_pres)
+    # res = JSONRenderer().render(serialized_pres.data)
+    # print()
+    print(serialized_pres.data)
+    return JsonResponse(serialized_pres.data, status=HTTP_200_OK, safe=False)
