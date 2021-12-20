@@ -125,3 +125,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 USER_MANAGEMENT_URL = 'http://127.0.0.1:8001/'
+PRESCRIPTION_MANAGEMENT_URL = 'http://127.0.0.1:8002/'

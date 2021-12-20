@@ -12,4 +12,5 @@ urlpatterns = [
     path('login_doctor/', views.login_doctor),
     path('login_patient/', views.login_patient),
     path('login_admin/', views.login_admin),
+    path('create_prescription/', views.create_prescription),
 ]

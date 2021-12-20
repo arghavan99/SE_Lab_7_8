@@ -84,6 +84,3 @@ def login_doctor(request):
     return JsonResponse({'token': token.key},
                     status=HTTP_200_OK)
 
-
-
-

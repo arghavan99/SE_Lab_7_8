@@ -74,3 +74,14 @@ def login_patient(request):
     token, _ = Token.objects.get_or_create(user=user)
     return Response({'token': token.key},
                     status=HTTP_200_OK)
+
+
+@csrf_exempt
+@api_view(["POST"])
+def is_patient_valid(request):
+    n_id = request.POST['n_id']
+    p = Patient.objects.filter(national_id=n_id)
+    if len(p) > 0:
+        return Response(status=HTTP_200_OK)
+    else:
+        return Response(status=HTTP_404_NOT_FOUND)

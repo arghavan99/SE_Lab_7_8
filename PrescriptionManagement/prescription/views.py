@@ -11,8 +11,8 @@ from prescription.models import Prescription
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def create_prescription(request):
-    doctor_id = request.POST['doctor_id']
-    p_n_id = request.POST['patient_national_id']
+    doctor_id = request.POST['d_id']
+    p_n_id = request.POST['p_n_id']
     drug_list = request.POST['drug_list']
     comment = request.POST['comment']
     pres = Prescription.objects.create(doctor_id=doctor_id, patient_n_id = p_n_id, drug_list=drug_list, comment=comment)

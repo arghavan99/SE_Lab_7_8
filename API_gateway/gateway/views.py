@@ -3,9 +3,10 @@ from django.shortcuts import render
 import requests
 # Create your views here.
 from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_200_OK, HTTP_401_UNAUTHORIZED
+from rest_framework.status import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_200_OK, HTTP_401_UNAUTHORIZED, \
+    HTTP_404_NOT_FOUND
 
-from API_GATEWAY.settings import USER_MANAGEMENT_URL
+from API_GATEWAY.settings import USER_MANAGEMENT_URL, PRESCRIPTION_MANAGEMENT_URL
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 
@@ -75,4 +76,31 @@ def login_admin(request):
     if res.status_code == 200:
         return JsonResponse(res.json(), status=HTTP_200_OK)
     return JsonResponse(res.json(), status=HTTP_401_UNAUTHORIZED)
+
+
+@api_view(('POST',))
+@renderer_classes((JSONRenderer,))
+def create_prescription(request):
+    try:
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
+        res_1 = requests.post(USER_MANAGEMENT_URL + 'get_user_permissions/', data={'token': token})
+        if not res_1.json()['is_doctor']:
+            return Response({'error': 'you are not a doctor!'}, status=HTTP_401_UNAUTHORIZED)
+    except:
+        return Response({'error': 'you are not a doctor'} ,status=HTTP_401_UNAUTHORIZED)
+    n_id = request.POST['n_id']
+    res_2 = requests.post(USER_MANAGEMENT_URL + 'patient/validate_patient/', data={'n_id':n_id})
+    if res_2.status_code == 404:
+        return Response({'error': 'no such patient'},status=HTTP_404_NOT_FOUND)
+    params = {'d_id': res_1.json()['id'],
+              'drug_list': request.POST['drug_list'],
+              'comment': request.POST['comment'],
+              'p_n_id': n_id}
+    res = requests.post(PRESCRIPTION_MANAGEMENT_URL + 'create_prescription/', data=params)
+    if res.status_code ==  HTTP_200_OK:
+        return Response(status=HTTP_201_CREATED)
+    else:
+        return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
