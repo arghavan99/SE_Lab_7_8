@@ -1,0 +1,13 @@
+*
+!*/
+
+# Then add everything needed
+
+#!/docs/**
+!/.git/**
+!/.github/**
+!.gitignore
+!/aggregator/**
+!manage.py
+!requirements.txt
+

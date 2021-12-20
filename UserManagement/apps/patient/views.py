@@ -18,16 +18,16 @@ from apps.patient.models import Patient
 from apps.patient.serializers import PatientSerializer
 
 
-def get_patient(request):
-    national_id = request.data.get('national_id')
-    p = Patient.objects.filter(national_id=national_id)
-    if p is None:
-        return Response(status=HTTP_404_NOT_FOUND)
-    p = p[0]
-    serialized_patient = PatientSerializer(p)
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def get_patients(request):
+    n_ids = request.POST['n_ids']
+    n_ids = n_ids.split(",")
+    print(n_ids)
+    p = Patient.objects.filter(national_id__in=n_ids)
+    serialized_patient = PatientSerializer(p, many=True)
     print(serialized_patient.data)
-    res = JSONRenderer().render(serialized_patient.data)
-    return JsonResponse(res, status=HTTP_200_OK)
+    return JsonResponse(serialized_patient.data, status=HTTP_200_OK, safe=False)
 
 @user_passes_test(lambda u: u.is_superuser)
 def get_new_patients(request):

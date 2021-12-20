@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_200_OK, HTTP_401_UNAUTHORIZED, \
     HTTP_404_NOT_FOUND
 
-from API_GATEWAY.settings import USER_MANAGEMENT_URL, PRESCRIPTION_MANAGEMENT_URL
+from API_GATEWAY.settings import USER_MANAGEMENT_URL, PRESCRIPTION_MANAGEMENT_URL, AGGREGATOR_URL
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 
@@ -103,4 +103,18 @@ def create_prescription(request):
         return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
+@api_view(('POST',))
+@renderer_classes((JSONRenderer,))
+def get_prescriptions_for_doctor(request):
+    try:
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
+        res_1 = requests.post(USER_MANAGEMENT_URL + 'get_user_permissions/', data={'token': token})
+        if not res_1.json()['is_doctor']:
+            return Response({'error': 'you are not a doctor!'}, status=HTTP_401_UNAUTHORIZED)
+    except:
+        return Response({'error': 'you are not a doctor'} ,status=HTTP_401_UNAUTHORIZED)
+    res_2 = requests.post(AGGREGATOR_URL + 'get_pres_for_doctor/', {'d_id': res_1.json()['id']})
+    if res_2.status_code ==  HTTP_200_OK:
+        return JsonResponse(res_2.json(), status=HTTP_200_OK, safe=False)
+    else:
+        return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)

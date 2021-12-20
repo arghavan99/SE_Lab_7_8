@@ -1,11 +1,15 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import AllowAny
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 
 from prescription.models import Prescription
+from prescription.serializers import PrescriptionSerializer
+
 
 @csrf_exempt
 @api_view(["POST"])
@@ -17,3 +21,17 @@ def create_prescription(request):
     comment = request.POST['comment']
     pres = Prescription.objects.create(doctor_id=doctor_id, patient_n_id = p_n_id, drug_list=drug_list, comment=comment)
     return Response(status=HTTP_200_OK)
+
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def get_prescriptions_for_doctor(request):
+    doctor_id = request.POST['d_id']
+    pres = list(Prescription.objects.filter(doctor_id=doctor_id))
+    serialized_pres = PrescriptionSerializer(pres, many=True)
+    print(serialized_pres)
+    # res = JSONRenderer().render(serialized_pres.data)
+    # print()
+    print(serialized_pres.data)
+    return JsonResponse(serialized_pres.data, status=HTTP_200_OK, safe=False)
