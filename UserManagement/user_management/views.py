@@ -23,7 +23,7 @@ def get_user_permissions(request):
     if len(d) > 0:
         params = {'is_doctor': True, 'is_patient': False, 'is_admin': False, 'id': d[0].user_ptr_id}
     elif len(p) > 0:
-        params = {'is_doctor': False, 'is_patient': True, 'is_admin': False, 'id': p[0].user_ptr_id}
+        params = {'is_doctor': False, 'is_patient': True, 'is_admin': False, 'id': p[0].user_ptr_id, 'n_id':p[0].national_id }
     elif len(a) > 0:
         params = {'is_doctor': False, 'is_patient': False, 'is_admin': True, 'id': a[0].user_ptr_id}
     else:

@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.renderers import JSONRenderer
+from django.utils.timezone import datetime
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -17,6 +18,16 @@ from rest_framework.status import (
 from apps.patient.models import Patient
 from apps.patient.serializers import PatientSerializer
 
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def get_new_patients(request):
+    patients = list(Patient.objects.filter(date_joint=datetime.today()))
+    serialized_patients = PatientSerializer(patients, many=True)
+    print(serialized_patients)
+    # res = JSONRenderer().render(serialized_pres.data)
+    # print()
+    print(serialized_patients.data)
+    return JsonResponse(serialized_patients.data, status=HTTP_200_OK, safe=False)
 
 @api_view(["POST"])
 @permission_classes((AllowAny,))
@@ -29,13 +40,8 @@ def get_patients(request):
     print(serialized_patient.data)
     return JsonResponse(serialized_patient.data, status=HTTP_200_OK, safe=False)
 
-@user_passes_test(lambda u: u.is_superuser)
-def get_new_patients(request):
-    patients = reversed(Patient.objects.all().order_by('-id')[:5])
-    serialized_patients = PatientSerializer(patients, many=True)
-    print(serialized_patients.data)
-    res = JSONRenderer().render(serialized_patients.data)
-    return JsonResponse(res, status=HTTP_200_OK)
+
+
 
 
 @csrf_exempt

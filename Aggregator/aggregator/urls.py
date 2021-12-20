@@ -19,5 +19,8 @@ from aggregator import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('get_pres_for_doctor/', views.get_prescription_list_for_doctor)
+    path('get_pres_for_doctor/', views.get_prescription_list_for_doctor),
+    path('get_pres_for_patient/', views.get_prescription_list_for_patient),
+    path('get_pres_for_admin/', views.get_prescription_list_for_admin),
+    path('get_new_users/', views.get_new_users)
 ]

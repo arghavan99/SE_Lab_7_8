@@ -118,3 +118,85 @@ def get_prescriptions_for_doctor(request):
         return JsonResponse(res_2.json(), status=HTTP_200_OK, safe=False)
     else:
         return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(('POST',))
+@renderer_classes((JSONRenderer,))
+def get_prescriptions_for_patient(request):
+    try:
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
+        res_1 = requests.post(USER_MANAGEMENT_URL + 'get_user_permissions/', data={'token': token})
+        if not res_1.json()['is_patient']:
+            return Response({'error': 'you are not a patient!'}, status=HTTP_401_UNAUTHORIZED)
+    except:
+        return Response({'error': 'you are not a patient'} ,status=HTTP_401_UNAUTHORIZED)
+    res_2 = requests.post(AGGREGATOR_URL + 'get_pres_for_patient/', {'p_n_id': res_1.json()['n_id']})
+    if res_2.status_code ==  HTTP_200_OK:
+        return JsonResponse(res_2.json(), status=HTTP_200_OK, safe=False)
+    else:
+        return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(('POST',))
+@renderer_classes((JSONRenderer,))
+def get_prescriptions_for_admin(request):
+    try:
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
+        res_1 = requests.post(USER_MANAGEMENT_URL + 'get_user_permissions/', data={'token': token})
+        if not res_1.json()['is_admin']:
+            return Response({'error': 'you are not an admin!'}, status=HTTP_401_UNAUTHORIZED)
+    except:
+        return Response({'error': 'you are not an admin'} ,status=HTTP_401_UNAUTHORIZED)
+    res_2 = requests.post(AGGREGATOR_URL + 'get_pres_for_admin/', {})
+    if res_2.status_code ==  HTTP_200_OK:
+        return JsonResponse(res_2.json(), status=HTTP_200_OK, safe=False)
+    else:
+        return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(('POST',))
+@renderer_classes((JSONRenderer,))
+def get_prescription_count(request):
+    try:
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
+        res_1 = requests.post(USER_MANAGEMENT_URL + 'get_user_permissions/', data={'token': token})
+        if not res_1.json()['is_admin']:
+            return Response({'error': 'you are not an admin!'}, status=HTTP_401_UNAUTHORIZED)
+    except:
+        return Response({'error': 'you are not an admin'} ,status=HTTP_401_UNAUTHORIZED)
+    res_2 = requests.post(PRESCRIPTION_MANAGEMENT_URL + 'get_daily_pres/', {})
+    if res_2.status_code ==  HTTP_200_OK:
+        return JsonResponse(res_2.json(), status=HTTP_200_OK, safe=False)
+    else:
+        return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(('POST',))
+@renderer_classes((JSONRenderer,))
+def get_new_users(request):
+    try:
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
+        res_1 = requests.post(USER_MANAGEMENT_URL + 'get_user_permissions/', data={'token': token})
+        if not res_1.json()['is_admin']:
+            return Response({'error': 'you are not an admin!'}, status=HTTP_401_UNAUTHORIZED)
+    except:
+        return Response({'error': 'you are not an admin'} ,status=HTTP_401_UNAUTHORIZED)
+    res_2 = requests.post(AGGREGATOR_URL + 'get_new_users/', {})
+    if res_2.status_code ==  HTTP_200_OK:
+        return JsonResponse(res_2.json(), status=HTTP_200_OK, safe=False)
+    else:
+        return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(('POST',))
+@renderer_classes((JSONRenderer,))
+def get_doctor_signups(request):
+    try:
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
+        res_1 = requests.post(USER_MANAGEMENT_URL + 'get_user_permissions/', data={'token': token})
+        if not res_1.json()['is_admin']:
+            return Response({'error': 'you are not an admin!'}, status=HTTP_401_UNAUTHORIZED)
+    except:
+        return Response({'error': 'you are not an admin'} ,status=HTTP_401_UNAUTHORIZED)
+    res_2 = requests.post(USER_MANAGEMENT_URL + 'doctor/get_new_doctors/', {})
+    if res_2.status_code ==  HTTP_200_OK:
+        return JsonResponse(res_2.json(), status=HTTP_200_OK, safe=False)
+    else:
+        return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)

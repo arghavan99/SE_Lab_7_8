@@ -1,11 +1,12 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.timezone import datetime
 
 
 class Patient(User):
     name = models.CharField(max_length=100)
     national_id = models.CharField(max_length=10, unique=True)
-
+    date_joint = models.DateField(default=datetime.now)
     class Meta:
         permissions = ()
 
